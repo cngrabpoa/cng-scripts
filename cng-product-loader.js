@@ -1,13 +1,11 @@
 /**
- * CNG OFFICIAL PRODUCT LOADER ENGINE
- * Author: Gemini AI Collaboration
- * 100% Mirror of Requested HTML/JS Structure
+ * CNG OFFICIAL PRODUCT LOADER ENGINE - V3 (STABLE)
+ * Fixes: Data Parsing & Undefined issues
  */
 
 let galleryImgs = [];
 let currentIndex = 0;
 
-// Inject CSS into the Page Head
 (function injectStyles() {
     const css = `
         .ultra-luxury-card { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #e2e8f0; max-width: 800px; margin: 30px auto; padding: 45px; background: linear-gradient(145deg, #131c2e, #020617); border-radius: 30px; border: 1px solid rgba(255, 255, 255, 0.05); box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6); line-height: 1.8; }
@@ -62,26 +60,30 @@ async function loadUltraProduct(pid) {
         const text = await res.text();
         const rows = text.split(/\r?\n/);
         
-        const row = rows.find(r => {
-            const cols = r.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-            return cols[1]?.replace(/"/g, '').trim() === pid;
-        });
+        let foundData = null;
+        for (let i = 0; i < rows.length; i++) {
+            // Regex to handle commas inside quotes correctly
+            const cols = rows[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+            if (cols[1] && cols[1].replace(/"/g, '').trim() === pid) {
+                foundData = cols.map(v => v.replace(/^"|"$/g, '').trim());
+                break;
+            }
+        }
 
-        if (row) {
-            const c = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(v => v.replace(/"/g, '').trim());
+        if (foundData) {
             const p = { 
-                title: c[2], intro: c[3], hero: c[5], ebay: c[10], 
-                feat: c[11], spec: c[12], pack: c[13], gall: c[14], 
-                manual: c[15], sBox: c[16], sInfo: c[17], ideal: c[18], tag: c[19] 
+                title: foundData[2], intro: foundData[3], hero: foundData[5], ebay: foundData[10], 
+                feat: foundData[11], spec: foundData[12], pack: foundData[13], gall: foundData[14], 
+                manual: foundData[15], sBox: foundData[16], sInfo: foundData[17], ideal: foundData[18], tag: foundData[19] 
             };
 
-            galleryImgs = (p.gall && p.gall !== "/i") ? p.gall.split('|').map(i => i.trim()) : [];
+            galleryImgs = (p.gall && p.gall !== "/i") ? p.gall.split('|').map(img => img.trim()) : [];
 
             let postHTML = `
             <div class="ultra-luxury-card">
                 <div class="premium-img-wrap"><a href="${p.ebay}" target="_blank"><img src="${p.hero}"></a></div>
-                <h1 class="luxury-title">${p.title}</h1>
-                <p style="text-align: center; color: #94a3b8;">${p.intro}</p>
+                <h1 class="luxury-title">${p.title || "Premium Product"}</h1>
+                <p style="text-align: center; color: #94a3b8;">${p.intro || ""}</p>
                 <div style="text-align: center;"><a href="${p.ebay}" class="luxury-btn" target="_blank">Shop Now on eBay</a></div>
                 ${renderSection("Features:", p.feat)}
                 ${renderSection("Specifications:", p.spec)}
@@ -92,11 +94,11 @@ async function loadUltraProduct(pid) {
                 ${renderSection("Safety Information:", p.sInfo)}
                 ${renderSection("Product Ideal For:", p.ideal, "color: #4ade80;")}
                 <p style="text-align: center; margin-top: 40px; font-size: 14px; color: #64748b; font-style: italic;">
-                    ${p.tag.replace(/<\/?[^>]+(>|$)/g, "")}
+                    ${(p.tag || "").replace(/<\/?[^>]+(>|$)/g, "")}
                 </p>
                 <div style="text-align:center; padding:25px 15px; margin-top:30px; border-top:1px solid rgba(255,255,255,0.08);">
                     <div style="font-size:18px; font-weight:bold; color:#ffffff;">C & Grab</div>
-                    <div style="font-size:13px; color:#a5b4fc;">Powered by <b>Pleiadians of Atlantis</b></div>
+                    <div style="margin-top:8px; font-size:13px; color:#a5b4fc;">Powered by <b>Pleiadians of Atlantis</b></div>
                 </div>
             </div>`;
             
@@ -104,11 +106,11 @@ async function loadUltraProduct(pid) {
 
             if (galleryImgs.length > 0) {
                 let gHTML = '<div class="section-header">Product Gallery:</div><div class="premium-photo-grid">';
-                galleryImgs.forEach((img, index) => { gHTML += `<div class="grid-item" onclick="openLB(${index})"><img src="${img}"></div>`; });
+                galleryImgs.forEach((img, index) => { if(img) gHTML += `<div class="grid-item" onclick="openLB(${index})"><img src="${img}"></div>`; });
                 document.getElementById('gallery-area').innerHTML = gHTML + '</div>';
             }
         }
-    } catch (e) { console.error(e); }
+    } catch (e) { console.error("Loading Error:", e); }
 }
 
 function renderSection(title, rawData, style = "") {
