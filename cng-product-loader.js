@@ -1,11 +1,12 @@
 /**
- * CNG OFFICIAL PRODUCT LOADER ENGINE - V3 (STABLE)
- * Fixes: Data Parsing & Undefined issues
+ * CNG OFFICIAL PRODUCT LOADER ENGINE - V4 (ULTRA STABLE)
+ * Combined Power: V3 Data Parsing + Original Premium UI Structure
  */
 
 let galleryImgs = [];
 let currentIndex = 0;
 
+// 1. Inject Styles & Overlay (100% Original Design)
 (function injectStyles() {
     const css = `
         .ultra-luxury-card { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #e2e8f0; max-width: 800px; margin: 30px auto; padding: 45px; background: linear-gradient(145deg, #131c2e, #020617); border-radius: 30px; border: 1px solid rgba(255, 255, 255, 0.05); box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6); line-height: 1.8; }
@@ -53,6 +54,7 @@ let currentIndex = 0;
     document.body.insertAdjacentHTML('beforeend', overlay);
 })();
 
+// 2. Load Product with Robust Parsing
 async function loadUltraProduct(pid) {
     const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSzdDxPhWEqI7Kwy6w8yb-BVipYp34HX-LPzTxMEwLjEh_cC5Z1X4tXOodZ0IxJRN9aZydBt2oKkA8r/pub?gid=647691696&single=true&output=csv";
     try {
@@ -62,7 +64,7 @@ async function loadUltraProduct(pid) {
         
         let foundData = null;
         for (let i = 0; i < rows.length; i++) {
-            // Regex to handle commas inside quotes correctly
+            // Regex handles commas inside quoted fields flawlessly
             const cols = rows[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
             if (cols[1] && cols[1].replace(/"/g, '').trim() === pid) {
                 foundData = cols.map(v => v.replace(/^"|"$/g, '').trim());
@@ -81,21 +83,26 @@ async function loadUltraProduct(pid) {
 
             let postHTML = `
             <div class="ultra-luxury-card">
-                <div class="premium-img-wrap"><a href="${p.ebay}" target="_blank"><img src="${p.hero}"></a></div>
+                <div class="premium-img-wrap"><a href="${p.ebay}" target="_blank"><img src="${p.hero}" alt="${p.title}"></a></div>
                 <h1 class="luxury-title">${p.title || "Premium Product"}</h1>
                 <p style="text-align: center; color: #94a3b8;">${p.intro || ""}</p>
                 <div style="text-align: center;"><a href="${p.ebay}" class="luxury-btn" target="_blank">Shop Now on eBay</a></div>
+                
                 ${renderSection("Features:", p.feat)}
                 ${renderSection("Specifications:", p.spec)}
                 ${renderSection("Package Content:", p.pack)}
+                
                 <div id="gallery-area"></div>
+                
                 ${renderSection("User Manual & Guide:", p.manual)}
                 ${p.sBox && p.sBox !== "/i" ? `<div class="safety-box">⚠️ ${p.sBox}</div>` : ''}
                 ${renderSection("Safety Information:", p.sInfo)}
                 ${renderSection("Product Ideal For:", p.ideal, "color: #4ade80;")}
-                <p style="text-align: center; margin-top: 40px; font-size: 14px; color: #64748b; font-style: italic;">
+                
+                <p style="text-align: center; margin-top: 40px; font-size: 14px; color: #64748b; font-style: italic; font-weight: normal !important;">
                     ${(p.tag || "").replace(/<\/?[^>]+(>|$)/g, "")}
                 </p>
+
                 <div style="text-align:center; padding:25px 15px; margin-top:30px; border-top:1px solid rgba(255,255,255,0.08);">
                     <div style="font-size:18px; font-weight:bold; color:#ffffff;">C & Grab</div>
                     <div style="margin-top:8px; font-size:13px; color:#a5b4fc;">Powered by <b>Pleiadians of Atlantis</b></div>
@@ -106,13 +113,16 @@ async function loadUltraProduct(pid) {
 
             if (galleryImgs.length > 0) {
                 let gHTML = '<div class="section-header">Product Gallery:</div><div class="premium-photo-grid">';
-                galleryImgs.forEach((img, index) => { if(img) gHTML += `<div class="grid-item" onclick="openLB(${index})"><img src="${img}"></div>`; });
+                galleryImgs.forEach((img, index) => { 
+                    if(img) gHTML += `<div class="grid-item" onclick="openLB(${index})"><img src="${img}"></div>`; 
+                });
                 document.getElementById('gallery-area').innerHTML = gHTML + '</div>';
             }
         }
     } catch (e) { console.error("Loading Error:", e); }
 }
 
+// 3. UI Helpers (Lists & Lightbox)
 function renderSection(title, rawData, style = "") {
     if (!rawData || rawData === "/i" || rawData.trim() === "") return "";
     const items = rawData.split('|').map(i => i.trim());
@@ -123,7 +133,11 @@ window.openLB = function(index) { currentIndex = index; updateLB(); document.get
 window.updateLB = function() {
     document.getElementById('lb-img').src = galleryImgs[currentIndex];
     const tBox = document.getElementById('lb-thumbs-box');
-    tBox.innerHTML = galleryImgs.map((img, i) => `<img src="${img}" class="lb-thumb ${i===currentIndex?'active':''}" onclick="currentIndex=${i};updateLB()">`).join('');
+    if (tBox) {
+        tBox.innerHTML = galleryImgs.map((img, i) => 
+            `<img src="${img}" class="lb-thumb ${i===currentIndex?'active':''}" onclick="currentIndex=${i};updateLB()">`
+        ).join('');
+    }
 }
 window.closeLB = function() { document.getElementById('lb-overlay').style.display = 'none'; }
 window.changeImg = function(s) { currentIndex = (currentIndex + s + galleryImgs.length) % galleryImgs.length; updateLB(); }
