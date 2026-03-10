@@ -1,7 +1,6 @@
 window.loadUltraProduct = async function(pid) {
     const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSzdDxPhWEqI7Kwy6w8yb-BVipYp34HX-LPzTxMEwLjEh_cC5Z1X4tXOodZ0IxJRN9aZydBt2oKkA8r/pub?gid=647691696&single=true&output=csv";
 
-    // 1. Inject Comprehensive CSS (Hover, Glow, Gallery & Animations)
     if (!document.getElementById('cng-ultra-styles')) {
         const css = `
             .ultra-luxury-card { font-family: 'Segoe UI', Roboto, sans-serif; color: #e2e8f0; max-width: 800px; margin: 30px auto; padding: 45px; background: linear-gradient(145deg, #131c2e, #020617); border-radius: 30px; border: 1px solid rgba(255, 255, 255, 0.05); box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6); line-height: 1.8; }
@@ -35,7 +34,6 @@ window.loadUltraProduct = async function(pid) {
         const s = document.createElement('style'); s.id = 'cng-ultra-styles'; s.innerHTML = css; document.head.appendChild(s);
     }
 
-    // 2. Lightbox HTML Structure
     if (!document.getElementById('lb-overlay')) {
         const lbHTML = `<div id="lb-overlay" onclick="window.closeLB()"><div id="lb-container" onclick="event.stopPropagation()"><span class="lb-close" onclick="window.closeLB()">&times;</span><button class="lb-btn lb-prev" onclick="window.changeImg(-1)">&#10094;</button><img id="lb-img" src=""><button class="lb-btn lb-next" onclick="window.changeImg(1)">&#10095;</button><div id="lb-thumbs-box"></div></div></div>`;
         document.body.insertAdjacentHTML('beforeend', lbHTML);
@@ -48,6 +46,7 @@ window.loadUltraProduct = async function(pid) {
         document.getElementById('lb-img').src = window.galleryImgs[window.currentIndex];
         document.getElementById('lb-thumbs-box').innerHTML = window.galleryImgs.map((img, i) => `<img src="${img}" class="lb-thumb ${i===window.currentIndex?'active':''}" onclick="window.currentIndex=${i};window.updateLB()">`).join('');
     };
+    window.openLB = (idx) => { window.currentIndex = idx; window.updateLB(); document.getElementById('lb-overlay').style.display = 'flex'; };
 
     try {
         const res = await fetch(csvUrl);
@@ -62,7 +61,9 @@ window.loadUltraProduct = async function(pid) {
             if (p.gall && p.gall !== "/i") window.galleryImgs = p.gall.split('|').map(i => i.trim());
 
             let html = `<div class="ultra-luxury-card">
-                <div class="premium-img-wrap"><img src="${p.hero}" onclick="window.galleryImgs=[ '${p.hero}', ...window.galleryImgs ]; window.openLB(0)"></div>
+                <div class="premium-img-wrap">
+                    <a href="${p.ebay}" target="_blank"><img src="${p.hero}" title="Click to view on eBay"></a>
+                </div>
                 <h1 class="luxury-title">${p.title}</h1>
                 <p style="text-align:center; color:#94a3b8;">${p.intro}</p>
                 <div style="text-align:center;"><a href="${p.ebay}" class="luxury-btn" target="_blank">Shop Now on eBay</a></div>
@@ -73,8 +74,11 @@ window.loadUltraProduct = async function(pid) {
                 ${renderSection("User Manual", p.manual)}
                 ${p.sBox && p.sBox !== "/i" ? `<div class="safety-box">⚠️ ${p.sBox}</div>` : ''}
                 ${renderSection("Safety Information", p.sInfo)}
-                ${renderSection("Ideal For", p.ideal, "color:#4ade80;")}
-                <p style="text-align:center; margin-top:40px; font-size:14px; color:#64748b; font-style:italic;">${p.tag}</p>
+                ${renderSection("Product Ideal For", p.ideal, "color:#4ade80;")}
+                
+                <p style="text-align: center; margin-top: 40px; font-size: 14px; color: #64748b; font-style: italic; font-weight: normal !important;">
+                    ${p.tag.replace(/<\/?[^>]+(>|$)/g, "")}
+                </p>
             </div>`;
 
             document.getElementById('master-luxury-root').innerHTML = html;
@@ -88,8 +92,7 @@ window.loadUltraProduct = async function(pid) {
     } catch (e) { console.error(e); }
 };
 
-window.openLB = (idx) => { window.currentIndex = idx; window.updateLB(); document.getElementById('lb-overlay').style.display = 'flex'; };
 function renderSection(t, d, s="") {
-    if (!d || d === "/i") return "";
+    if (!d || d === "/i" || d.trim() === "") return "";
     return `<div class="section-header" style="${s}">${t}</div><ul class="luxury-list-ui">${d.split('|').map(i => `<li>${i.trim()}</li>`).join('')}</ul>`;
 }
