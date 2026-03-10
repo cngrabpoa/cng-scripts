@@ -17,9 +17,18 @@ window.loadUltraProduct = async function(pid) {
             .luxury-btn:hover { transform: translateY(-4px); background: #7dd3fc; }
             .premium-photo-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin: 30px 0; }
             .grid-item { overflow: hidden; border-radius: 12px; border: 1px solid rgba(56, 189, 248, 0.2); transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1); cursor: pointer; }
-            .grid-item img { width: 100%; height: auto; aspect-ratio: 1 / 1;  object-fit: cover;    display: block; transition: all 0.5s ease; }
+            .grid-item img { width: 100%; height: auto; aspect-ratio: 1 / 1; object-fit: cover; display: block; transition: all 0.5s ease; }
             .grid-item:hover { transform: translateY(-8px); border-color: #38bdf8; box-shadow: 0 15px 30px rgba(56, 189, 248, 0.3); }
             .grid-item:hover img { transform: scale(1.1); }
+            
+            /* Loading Animation */
+            @keyframes pulse {
+                0% { opacity: 0.5; }
+                50% { opacity: 1; }
+                100% { opacity: 0.5; }
+            }
+            .loading-text { text-align:center; padding:100px 20px; color:#38bdf8; font-family: sans-serif; letter-spacing: 2px; font-size: 16px; font-weight:bold; text-transform: uppercase; animation: pulse 1.5s infinite; }
+
             #lb-overlay { display: none; position: fixed; z-index: 99999; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.95); backdrop-filter: blur(10px); flex-direction: column; align-items: center; justify-content: center; }
             #lb-container { position: relative; max-width: 90%; display: flex; flex-direction: column; align-items: center; }
             #lb-img { max-width: 100%; max-height: 70vh; border-radius: 10px; border: 2px solid rgba(56, 189, 248, 0.3); margin-bottom: 20px; }
@@ -47,6 +56,9 @@ window.loadUltraProduct = async function(pid) {
         document.getElementById('lb-thumbs-box').innerHTML = window.galleryImgs.map((img, i) => `<img src="${img}" class="lb-thumb ${i===window.currentIndex?'active':''}" onclick="window.currentIndex=${i};window.updateLB()">`).join('');
     };
     window.openLB = (idx) => { window.currentIndex = idx; window.updateLB(); document.getElementById('lb-overlay').style.display = 'flex'; };
+
+    // --- LOADING MESSAGE පටන් ගන්න තැන ---
+    document.getElementById('master-luxury-root').innerHTML = '<div class="loading-text">Unlocking Premium Product Experience...</div>';
 
     try {
         const res = await fetch(csvUrl);
@@ -80,7 +92,7 @@ window.loadUltraProduct = async function(pid) {
                     ${p.tag.replace(/<\/?[^>]+(>|$)/g, "")}
                 </p>
                 <div style="text-align:center; margin: 40px 0;">
-                    <a href="${p.ebay}" class="luxury-btn" style="box-shadow: 0 0 20px rgba(56, 189, 248, 0.4);" target="_blank">BUY IT NOW</a>
+                    <a href="${p.ebay}" class="luxury-btn" style="box-shadow: 0 0 25px rgba(56, 189, 248, 0.4); border: 2px solid rgba(255,255,255,0.1);" target="_blank">BUY IT NOW</a>
                 </div>
             </div>`;
 
@@ -99,4 +111,3 @@ function renderSection(t, d, s="") {
     if (!d || d === "/i" || d.trim() === "") return "";
     return `<div class="section-header" style="${s}">${t}</div><ul class="luxury-list-ui">${d.split('|').map(i => `<li>${i.trim()}</li>`).join('')}</ul>`;
 }
-
