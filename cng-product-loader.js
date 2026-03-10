@@ -1,143 +1,109 @@
 /**
- * CNG OFFICIAL PRODUCT LOADER ENGINE - V4 (ULTRA STABLE)
- * Combined Power: V3 Data Parsing + Original Premium UI Structure
+ * CNG OFFICIAL PRODUCT LOADER - FINAL ULTRA V4
+ * Built to bypass all Blogger/Cache issues.
  */
 
-let galleryImgs = [];
-let currentIndex = 0;
-
-// 1. Inject Styles & Overlay (100% Original Design)
-(function injectStyles() {
+(function() {
+    // 1. CSS Injection (With !important to override Blogger styles)
     const css = `
-        .ultra-luxury-card { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #e2e8f0; max-width: 800px; margin: 30px auto; padding: 45px; background: linear-gradient(145deg, #131c2e, #020617); border-radius: 30px; border: 1px solid rgba(255, 255, 255, 0.05); box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6); line-height: 1.8; }
-        .premium-img-wrap { text-align: center; margin-bottom: 40px; }
-        .premium-img-wrap img { border-radius: 20px; width: 100%; height: auto; max-width: 320px; border: 1px solid rgba(56, 189, 248, 0.2); transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1); box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4); cursor: pointer; }
-        .premium-img-wrap img:hover { transform: translateY(-12px) scale(1.03); box-shadow: 0 25px 50px rgba(56, 189, 248, 0.25); border: 1px solid rgba(56, 189, 248, 0.5); }
-        .luxury-title { font-size: 32px; font-weight: 800; text-align: center; background: linear-gradient(to right, #ffffff, #38bdf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 25px; display: block !important; }
-        .section-header { font-size: 20px; font-weight: 700; color: #38bdf8; margin-top: 35px; margin-bottom: 15px; display: flex; align-items: center; border-bottom: 1px solid rgba(56, 189, 248, 0.2); padding-bottom: 8px; }
+        #master-luxury-root { all: initial; font-family: 'Segoe UI', Roboto, sans-serif; display: block; margin-bottom: 50px; }
+        .ultra-luxury-card { background: linear-gradient(145deg, #131c2e, #020617) !important; color: #e2e8f0 !important; max-width: 800px !important; margin: 30px auto !important; padding: 40px !important; border-radius: 30px !important; border: 1px solid rgba(255, 255, 255, 0.05) !important; box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6) !important; line-height: 1.8 !important; }
+        .premium-img-wrap { text-align: center !important; margin-bottom: 30px !important; }
+        .premium-img-wrap img { border-radius: 20px !important; width: 100% !important; max-width: 320px !important; border: 1px solid rgba(56, 189, 248, 0.3) !important; box-shadow: 0 10px 30px rgba(0,0,0,0.5) !important; }
+        .luxury-title { font-size: 28px !important; font-weight: 800 !important; text-align: center !important; color: #ffffff !important; margin-bottom: 20px !important; background: linear-gradient(to right, #fff, #38bdf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .section-header { font-size: 20px !important; font-weight: 700 !important; color: #38bdf8 !important; margin-top: 35px !important; margin-bottom: 15px !important; border-bottom: 1px solid rgba(56, 189, 248, 0.2) !important; padding-bottom: 8px !important; }
         .luxury-list-ui { list-style: none !important; padding: 0 !important; margin: 15px 0 !important; }
-        .luxury-list-ui li { position: relative; padding-left: 28px !important; margin-bottom: 12px; color: #94a3b8; }
-        .luxury-list-ui li::before { content: "✦"; position: absolute; left: 0; color: #38bdf8; font-weight: bold; }
-        .safety-box { background: rgba(225, 29, 72, 0.1); border: 1px solid rgba(225, 29, 72, 0.3); padding: 15px; border-radius: 12px; margin: 20px 0; color: #fb7185; font-weight: 600; text-align: center; }
-        .luxury-btn { display: inline-block; padding: 16px 40px; background: #38bdf8; color: #020617 !important; font-weight: 800; text-transform: uppercase; text-decoration: none !important; border-radius: 50px; transition: 0.3s; margin: 20px 0; box-shadow: 0 10px 25px rgba(56, 189, 248, 0.3); }
-        .luxury-btn:hover { transform: translateY(-4px); background: #7dd3fc; }
-        .premium-photo-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin: 30px 0; }
-        .grid-item { overflow: hidden; border-radius: 12px; border: 1px solid rgba(56, 189, 248, 0.2); transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1); cursor: pointer; }
-        .grid-item img { width: 100%; height: 160px; object-fit: cover; display: block; transition: all 0.5s ease; }
-        .grid-item:hover { transform: translateY(-8px); border-color: #38bdf8; box-shadow: 0 15px 30px rgba(56, 189, 248, 0.3); }
-        .grid-item:hover img { transform: scale(1.1); }
-        #lb-overlay { display: none; position: fixed; z-index: 10000; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.95); backdrop-filter: blur(10px); flex-direction: column; align-items: center; justify-content: center; }
-        #lb-container { position: relative; max-width: 90%; display: flex; flex-direction: column; align-items: center; }
-        #lb-img { max-width: 100%; max-height: 70vh; border-radius: 10px; border: 2px solid rgba(56, 189, 248, 0.3); margin-bottom: 20px; }
-        #lb-thumbs-box { display: flex; gap: 10px; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 10px; overflow-x: auto; }
-        .lb-thumb { width: 60px; height: 60px; object-fit: cover; border-radius: 5px; cursor: pointer; border: 2px solid transparent; opacity: 0.6; }
-        .lb-thumb.active { border-color: #38bdf8; opacity: 1; }
-        .lb-close { position: absolute; top: -50px; right: 0; color: white; font-size: 40px; cursor: pointer; }
-        .lb-btn { position: absolute; top: 40%; transform: translateY(-50%); background: rgba(56, 189, 248, 0.2); color: white; border: none; padding: 15px; cursor: pointer; font-size: 24px; border-radius: 50%; }
-        .lb-prev { left: -70px; } .lb-next { right: -70px; }
-        @media (max-width: 600px) { .premium-photo-grid { grid-template-columns: repeat(2, 1fr); } .lb-btn { display: none; } }
+        .luxury-list-ui li { position: relative !important; padding-left: 28px !important; margin-bottom: 10px !important; color: #94a3b8 !important; }
+        .luxury-list-ui li::before { content: "✦" !important; position: absolute !important; left: 0 !important; color: #38bdf8 !important; }
+        .safety-box { background: rgba(225, 29, 72, 0.1) !important; border: 1px solid rgba(225, 29, 72, 0.3) !important; padding: 15px !important; border-radius: 12px !important; margin: 20px 0 !important; color: #fb7185 !important; font-weight: 600 !important; text-align: center !important; }
+        .luxury-btn { display: inline-block !important; padding: 15px 35px !important; background: #38bdf8 !important; color: #020617 !important; font-weight: 800 !important; text-transform: uppercase !important; text-decoration: none !important; border-radius: 50px !important; margin-top: 10px !important; }
+        .premium-photo-grid { display: grid !important; grid-template-columns: repeat(4, 1fr) !important; gap: 10px !important; margin-top: 20px !important; }
+        .grid-item img { width: 100% !important; height: 120px !important; object-fit: cover !important; border-radius: 10px !important; cursor: pointer !important; border: 1px solid rgba(56, 189, 248, 0.2) !important; }
+        #lb-overlay { display: none; position: fixed; z-index: 99999; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); align-items: center; justify-content: center; }
+        @media (max-width: 600px) { .premium-photo-grid { grid-template-columns: repeat(2, 1fr) !important; } }
     `;
     const styleEl = document.createElement('style');
     styleEl.innerHTML = css;
     document.head.appendChild(styleEl);
 
-    const overlay = `
-        <div id="lb-overlay" onclick="closeLB()">
-            <div id="lb-container" onclick="event.stopPropagation()">
-                <span class="lb-close" onclick="closeLB()">&times;</span>
-                <button class="lb-btn lb-prev" onclick="changeImg(-1)">&#10094;</button>
-                <img id="lb-img" src="">
-                <button class="lb-btn lb-next" onclick="changeImg(1)">&#10095;</button>
-                <div id="lb-thumbs-box"></div>
-            </div>
-        </div>`;
-    document.body.insertAdjacentHTML('beforeend', overlay);
-})();
+    // 2. Lightbox Structure
+    const lb = document.createElement('div');
+    lb.id = 'lb-overlay';
+    lb.onclick = function() { this.style.display = 'none'; };
+    lb.innerHTML = `<img id="lb-img" style="max-width:90%; max-height:80vh; border-radius:10px; border:2px solid #38bdf8;">`;
+    document.body.appendChild(lb);
 
-// 2. Load Product with Robust Parsing
-async function loadUltraProduct(pid) {
-    const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSzdDxPhWEqI7Kwy6w8yb-BVipYp34HX-LPzTxMEwLjEh_cC5Z1X4tXOodZ0IxJRN9aZydBt2oKkA8r/pub?gid=647691696&single=true&output=csv";
-    try {
-        const res = await fetch(csvUrl);
-        const text = await res.text();
-        const rows = text.split(/\r?\n/);
-        
-        let foundData = null;
-        for (let i = 0; i < rows.length; i++) {
-            // Regex handles commas inside quoted fields flawlessly
-            const cols = rows[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-            if (cols[1] && cols[1].replace(/"/g, '').trim() === pid) {
-                foundData = cols.map(v => v.replace(/^"|"$/g, '').trim());
-                break;
-            }
-        }
-
-        if (foundData) {
-            const p = { 
-                title: foundData[2], intro: foundData[3], hero: foundData[5], ebay: foundData[10], 
-                feat: foundData[11], spec: foundData[12], pack: foundData[13], gall: foundData[14], 
-                manual: foundData[15], sBox: foundData[16], sInfo: foundData[17], ideal: foundData[18], tag: foundData[19] 
-            };
-
-            galleryImgs = (p.gall && p.gall !== "/i") ? p.gall.split('|').map(img => img.trim()) : [];
-
-            let postHTML = `
-            <div class="ultra-luxury-card">
-                <div class="premium-img-wrap"><a href="${p.ebay}" target="_blank"><img src="${p.hero}" alt="${p.title}"></a></div>
-                <h1 class="luxury-title">${p.title || "Premium Product"}</h1>
-                <p style="text-align: center; color: #94a3b8;">${p.intro || ""}</p>
-                <div style="text-align: center;"><a href="${p.ebay}" class="luxury-btn" target="_blank">Shop Now on eBay</a></div>
-                
-                ${renderSection("Features:", p.feat)}
-                ${renderSection("Specifications:", p.spec)}
-                ${renderSection("Package Content:", p.pack)}
-                
-                <div id="gallery-area"></div>
-                
-                ${renderSection("User Manual & Guide:", p.manual)}
-                ${p.sBox && p.sBox !== "/i" ? `<div class="safety-box">⚠️ ${p.sBox}</div>` : ''}
-                ${renderSection("Safety Information:", p.sInfo)}
-                ${renderSection("Product Ideal For:", p.ideal, "color: #4ade80;")}
-                
-                <p style="text-align: center; margin-top: 40px; font-size: 14px; color: #64748b; font-style: italic; font-weight: normal !important;">
-                    ${(p.tag || "").replace(/<\/?[^>]+(>|$)/g, "")}
-                </p>
-
-                <div style="text-align:center; padding:25px 15px; margin-top:30px; border-top:1px solid rgba(255,255,255,0.08);">
-                    <div style="font-size:18px; font-weight:bold; color:#ffffff;">C & Grab</div>
-                    <div style="margin-top:8px; font-size:13px; color:#a5b4fc;">Powered by <b>Pleiadians of Atlantis</b></div>
-                </div>
-            </div>`;
+    // 3. Loader Function
+    window.loadUltraProduct = async function(pid) {
+        const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSzdDxPhWEqI7Kwy6w8yb-BVipYp34HX-LPzTxMEwLjEh_cC5Z1X4tXOodZ0IxJRN9aZydBt2oKkA8r/pub?gid=647691696&single=true&output=csv";
+        try {
+            const res = await fetch(csvUrl);
+            const text = await res.text();
+            const rows = text.split(/\r?\n/);
             
-            document.getElementById('master-luxury-root').innerHTML = postHTML;
+            // Regex to handle CSV commas correctly
+            const row = rows.find(r => {
+                const cols = r.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+                return cols[1] && cols[1].replace(/"/g, '').trim() === pid;
+            });
 
-            if (galleryImgs.length > 0) {
-                let gHTML = '<div class="section-header">Product Gallery:</div><div class="premium-photo-grid">';
-                galleryImgs.forEach((img, index) => { 
-                    if(img) gHTML += `<div class="grid-item" onclick="openLB(${index})"><img src="${img}"></div>`; 
-                });
-                document.getElementById('gallery-area').innerHTML = gHTML + '</div>';
+            if (row) {
+                const c = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(v => v.replace(/"/g, '').trim());
+                
+                // DATA MAPPING (B to T)
+                const p = {
+                    title: c[2], intro: c[3], hero: c[5], ebay: c[10],
+                    feat: c[11], spec: c[12], pack: c[13], gall: c[14],
+                    manual: c[15], sBox: c[16], sInfo: c[17], ideal: c[18], tag: c[19]
+                };
+
+                let postHTML = `
+                <div class="ultra-luxury-card">
+                    <div class="premium-img-wrap"><img src="${p.hero}"></div>
+                    <h1 class="luxury-title">${p.title}</h1>
+                    <p style="text-align: center; color: #94a3b8;">${p.intro}</p>
+                    <div style="text-align: center;"><a href="${p.ebay}" class="luxury-btn" target="_blank">🛒 Shop Now on eBay</a></div>
+                    
+                    ${renderSection("Main Features", p.feat)}
+                    ${renderSection("Product Specifications", p.spec)}
+                    ${renderSection("What's in the Box", p.pack)}
+
+                    <div id="gallery-target"></div>
+
+                    ${renderSection("How to Use", p.manual)}
+                    ${(p.sBox && p.sBox !== "/i") ? `<div class="safety-box">⚠️ ${p.sBox}</div>` : ''}
+                    ${renderSection("Safety Information", p.sInfo)}
+                    ${renderSection("Ideal For", p.ideal, "color:#4ade80 !important;")}
+
+                    <p style="text-align:center; margin-top:40px; font-size:13px; color:#64748b; font-style:italic;">
+                        ${p.tag ? p.tag.replace(/<\/?[^>]+(>|$)/g, "") : ""}
+                    </p>
+                    <div style="text-align:center; padding-top:20px; border-top:1px solid rgba(255,255,255,0.05); margin-top:30px;">
+                        <strong style="color:white; font-size:16px;">C & Grab</strong><br>
+                        <small style="color:#38bdf8;">Powered by Pleiadians of Atlantis</small>
+                    </div>
+                </div>`;
+
+                document.getElementById('master-luxury-root').innerHTML = postHTML;
+
+                // GALLERY RENDER
+                if (p.gall && p.gall !== "/i") {
+                    const imgs = p.gall.split('|').map(i => i.trim());
+                    let gHTML = '<div class="section-header">Product Gallery</div><div class="premium-photo-grid">';
+                    imgs.forEach(img => {
+                        gHTML += `<div class="grid-item" onclick="document.getElementById('lb-img').src='${img}'; document.getElementById('lb-overlay').style.display='flex'"><img src="${img}"></div>`;
+                    });
+                    document.getElementById('gallery-target').innerHTML = gHTML + '</div>';
+                }
+            } else {
+                document.getElementById('master-luxury-root').innerHTML = "<div style='color:red; text-align:center;'>Product Not Found!</div>";
             }
-        }
-    } catch (e) { console.error("Loading Error:", e); }
-}
+        } catch (e) { console.error("Loader Error:", e); }
+    };
 
-// 3. UI Helpers (Lists & Lightbox)
-function renderSection(title, rawData, style = "") {
-    if (!rawData || rawData === "/i" || rawData.trim() === "") return "";
-    const items = rawData.split('|').map(i => i.trim());
-    return `<div class="section-header" style="${style}">${title}</div><ul class="luxury-list-ui">${items.map(p => `<li>${p}</li>`).join('')}</ul>`;
-}
-
-window.openLB = function(index) { currentIndex = index; updateLB(); document.getElementById('lb-overlay').style.display = 'flex'; }
-window.updateLB = function() {
-    document.getElementById('lb-img').src = galleryImgs[currentIndex];
-    const tBox = document.getElementById('lb-thumbs-box');
-    if (tBox) {
-        tBox.innerHTML = galleryImgs.map((img, i) => 
-            `<img src="${img}" class="lb-thumb ${i===currentIndex?'active':''}" onclick="currentIndex=${i};updateLB()">`
-        ).join('');
+    function renderSection(title, data, style = "") {
+        if (!data || data === "/i" || data.trim() === "") return "";
+        const items = data.split('|').map(i => i.trim());
+        return `<div class="section-header" style="${style}">${title}</div><ul class="luxury-list-ui">${items.map(li => `<li>${li}</li>`).join('')}</ul>`;
     }
-}
-window.closeLB = function() { document.getElementById('lb-overlay').style.display = 'none'; }
-window.changeImg = function(s) { currentIndex = (currentIndex + s + galleryImgs.length) % galleryImgs.length; updateLB(); }
+})();
